@@ -23,11 +23,11 @@ namespace Settings{
 				}
 				else if(str==">MazeWeight:"){
 					int x; file>>x;
-					if(x>=5&&x<=31) MazeWeight=x;
+					if(x>=11&&x<=51) MazeWeight=x;
 				}
 				else if(str==">MazeHeight:"){
 					int x; file>>x;
-					if(x>=11&&x<=41) MazeHeight=x;
+					if(x>=11&&x<=31) MazeHeight=x;
 				}
 				else if(str==">Covered:"){
 					file>>str;
@@ -37,7 +37,7 @@ namespace Settings{
 			}
 		}
 		if(MazeShape==2){ //is heart
-			MazeHeight=37; MazeWeight=37;
+			MazeHeight=29; MazeWeight=29;
 		}
 		file.close();
 	}
@@ -50,12 +50,12 @@ namespace Settings{
 		file<<"// 1 : 矩形 , 2 : 心形"<<std::endl;
 		file<<">MazeShape: "<<MazeShape<<std::endl;
 		file<<"// MazeHeight & Weight 控制迷宫的高度和宽度:"<<std::endl;
-		file<<"// 为保证显示效果, 它们应处于 [11,41] 之间"<<std::endl;
+		file<<"// 为保证显示效果, 它们应处于 [11,31/51] 之间"<<std::endl;
 		file<<"// 如果要生成非矩形的迷宫, 该项设置可能不起作用"<<std::endl;
 		file<<">MazeHeight: "<<MazeHeight<<std::endl;
 		file<<">MazeWeight: "<<MazeWeight<<std::endl;
 		file<<"// Covered 决定是否要在迷宫上覆盖遮罩"<<std::endl;
-		file<<"Covered: "<<(isCover?"true":"false")<<std::endl;
+		file<<">Covered: "<<(isCover?"true":"false")<<std::endl;
 		file.close();
 	}
 }
