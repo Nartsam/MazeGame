@@ -11,13 +11,13 @@
 #include"config.h"
 using namespace std;
 #define RUNTIME clock()/(double)CLOCKS_PER_SEC
-const int dx[]={-1,0,1,0},dy[]={0,1,0,-1},TWD=4;
+const int dx[]={-1,0,1,0},dy[]={0,1,0,-1},TWD=4; //上下左右共4个方向
 inline int getRand(int l,int r){
 	if(l>r) swap(l,r);
 	return rand()%(r-l+1)+l;
 }
-inline int getOddRand(int l,int r){
-	if(l==r&&l%2==0&&r%2==0) return 1;
+inline int getOddRand(int l,int r){ //生成随机奇数
+	if(l==r&&l%2==0&&r%2==0) return 1; //不存在
 	for(int i=getRand(l,r);1;i=getRand(l,r)){
 		if(i&1) return i;
 	}
@@ -31,25 +31,25 @@ namespace Maze{
 #define BOUND -1
 #define WALL 1
 #define ROAD 2
-	const int RANGE=3;
-	int G[MAXSIZ][MAXSIZ],n,m,step;
+	const int RANGE=3; //玩家走过的3*3的范围内可视
+	int G[MAXSIZ][MAXSIZ],n,m,step; //G数组存地图
 	bool vis[MAXSIZ][MAXSIZ],ispath[MAXSIZ][MAXSIZ];
 	bool iscover[MAXSIZ][MAXSIZ];
 	bool covered;
 	vector<pair<int,int> > path;
 	pair<int,int> start,end,player;
-	struct CheatCode{
+	struct CheatCode{ //作弊码
 		char s[17];
 		int matched;
 		CheatCode(const char *str){strcpy(s,str);matched=0;}
 	};
-	CheatCode ShowPath("PATH");
-	CheatCode RemoveCover("REMOVE");
-	CheatCode Teleport("TELEPORT");
-	inline bool isout(int x,int y){
+	CheatCode ShowPath("PATH"); //显示参考路径
+	CheatCode RemoveCover("REMOVE"); //移除遮罩
+	CheatCode Teleport("TELEPORT"); //传送到终点附近
+	inline bool isout(int x,int y){ //是否出界，不包括边界
 		return x<1||x>n||y<1||y>m;
 	}
-	inline bool isescape(int x,int y){
+	inline bool isescape(int x,int y){ //包括边界
 		if(x<0||x>n+1||y<0||y>m+1) return 1;
 		return 0;
 	}
@@ -76,8 +76,8 @@ namespace Maze{
 			NatureSingleDFS(tx,ty);
 		}
 	}
-	void GenerateNatureSingleMaze(){ //recursive-backtracking
-		for(int i=0;i<=n+1;i++){ //initial
+	void GenerateNatureSingleMaze(){ //recursive-backtracking algorithm
+		for(int i=0;i<=n+1;i++){ //初始化
 			for(int j=0;j<=m+1;j++){
 				if(i==0||j==0||i>n||j>m) G[i][j]=BOUND;
 				else if((i&1)&&(j&1)) G[i][j]=ROAD;
@@ -104,7 +104,7 @@ namespace Maze{
 			for(int i=1;i<=n;i++) if(rand()&1) G[i][m]=ROAD;
 		}
 	}
-	void GeneratePrimNatureMaze(){ //random prim
+	void GeneratePrimNatureMaze(){ //random prim algorithm
 		int prim[MAXSIZ][MAXSIZ]={0};
 		for(int i=0;i<=n+1;i++){
 			for(int j=0;j<=m+1;j++){
@@ -179,13 +179,13 @@ namespace Maze{
 			for(int i=1;i<=n;i++) if(rand()&1) G[i][m]=ROAD;
 		}
 	}
-	void GeneratePoint(){
+	void GeneratePoint(){ //生成起点和终点
 		if(getRand(0,3)) start=make_pair(getOddRand(1,n/2+1),0);
 		else start=make_pair(0,getOddRand(1,m/2+1));
 		if(getRand(0,3)) end=make_pair(getOddRand(n/2+1,n),m+1);
 		else end=make_pair(n+1,getOddRand(m/2+1,m));
 	}
-	void SearchNext(int x,int y){ //dfs way-finding
+	void SearchNext(int x,int y){ //dfs寻路
 		if(vis[x][y]) return;
 		vis[x][y]=1;
 		if(x==end.first&&y==end.second) return;
@@ -208,8 +208,8 @@ namespace Maze{
 		reverse(path.begin(),path.end());
 	}
 	void GenerateMaze(int height,int weight){
-		system("cls");
-		n=height; m=weight; step=0;
+		system("cls"); //清掉上一次的迷宫
+		n=height; m=weight; step=0; //非法数据在Settings中已经被过滤了
 		covered=Settings::isCover;
 		memset(ispath,0,sizeof(ispath));
 		memset(iscover,covered,sizeof(iscover));
@@ -221,7 +221,7 @@ namespace Maze{
 		if(Settings::MazeType==1) GenerateNatureSingleMaze();
 		else if(Settings::MazeType==2) GeneratePrimNatureMaze();
 	}
-	void PrintMaze(){ //debug, no delay
+	void PrintMaze(){ //no delay
 		for(int i=0;i<=n+1;i++){
 			for(int j=0;j<=m+1;j++){
 				if(isescape(i,j)) continue;
@@ -316,10 +316,10 @@ namespace Maze{
 		setColor(TEXT_COLOR);
 		int row=2,stp=2,r=6;
 		if(n<=13) row=1;
-		MazeCursor(row,m+r); printf("��/W: Up");
-		MazeCursor(row+=stp,m+r); printf("��/S: Down");
-		MazeCursor(row+=stp,m+r); printf("��/A: Left");
-		MazeCursor(row+=stp,m+r); printf("��/D: Right");
+		MazeCursor(row,m+r); printf("¡ü/W: Up");
+		MazeCursor(row+=stp,m+r); printf("¡ý/S: Down");
+		MazeCursor(row+=stp,m+r); printf("¡û/A: Left");
+		MazeCursor(row+=stp,m+r); printf("¡ú/D: Right");
 		MazeCursor(row+=stp,m+r); printf("Esc: Exit");
 		if(cost<=0) return;
 		if(row+stp>n-9){
