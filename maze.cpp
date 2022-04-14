@@ -27,7 +27,7 @@ inline void wait(long long x){
 	while(clock()-res<x);
 }
 namespace Maze{
-#define MAXSIZ 507
+#define MAXSIZ 207
 #define BOUND -1
 #define WALL 1
 #define ROAD 2
@@ -39,7 +39,7 @@ namespace Maze{
 	vector<pair<int,int> > path;
 	pair<int,int> start,end,player;
 	struct CheatCode{
-		char s[13];
+		char s[17];
 		int matched;
 		CheatCode(const char *str){strcpy(s,str);matched=0;}
 	};
@@ -76,7 +76,7 @@ namespace Maze{
 			NatureSingleDFS(tx,ty);
 		}
 	}
-	void GenerateNatureSingleMaze(){
+	void GenerateNatureSingleMaze(){ //recursive-backtracking
 		for(int i=0;i<=n+1;i++){ //initial
 			for(int j=0;j<=m+1;j++){
 				if(i==0||j==0||i>n||j>m) G[i][j]=BOUND;
@@ -104,7 +104,7 @@ namespace Maze{
 			for(int i=1;i<=n;i++) if(rand()&1) G[i][m]=ROAD;
 		}
 	}
-	void GeneratePrimNatureMaze(){
+	void GeneratePrimNatureMaze(){ //random prim
 		int prim[MAXSIZ][MAXSIZ]={0};
 		for(int i=0;i<=n+1;i++){
 			for(int j=0;j<=m+1;j++){
@@ -350,7 +350,7 @@ namespace Maze{
 		PrintInfo();
 		PrintPath();
 	}
-	int toToward(char ch){ //get toward in d* array
+	int toToward(char ch){ //get toward in dxdy array
 		if(ch==UP||ch==K_W) return 0;
 		if(ch==RIGHT||ch==K_D) return 1;
 		if(ch==DOWN||ch==K_S) return 2;
@@ -459,13 +459,6 @@ namespace Maze{
 #undef WALL
 #undef ROAD
 }
-void PrintSettings(){ //debug, can remove
-	Settings::ReadinSettings();
-	cout<<Settings::MazeType<<' '<<Settings::MazeShape<<' '<<endl;
-	cout<<Settings::MazeHeight<<' '<<Settings::MazeWeight<<endl;
-	cout<<Settings::isCover<<endl;
-	Settings::WriteoutSettings();
-}
 int main(){
 	srand(time(0));
 	hideCursor();
@@ -483,7 +476,6 @@ int main(){
 		if(press==ESC) break;
 	}
 	Settings::WriteoutSettings();
-	///////////////////////////////////////////////
 	setColor(7); system("cls");
 	return 0;
 }
