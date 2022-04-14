@@ -4,7 +4,7 @@
 #include<cstdio>
 const int DROW=2;
 const int DCOL=4;
-void gotoxy(int x,int y){ //(0,0) is left & up
+void gotoxy(int x,int y){ //(0,0) is top-left
 	COORD coord={(short)y,(short)x}; //swap row and col
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
 }

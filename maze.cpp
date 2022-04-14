@@ -104,7 +104,7 @@ namespace Maze{
 			for(int i=1;i<=n;i++) if(rand()&1) G[i][m]=ROAD;
 		}
 	}
-	void GeneratePrimNatureMaze(){ //random prim
+	void GeneratePrimNatureMaze(){ //random prim algorithm
 		int prim[MAXSIZ][MAXSIZ]={0};
 		for(int i=0;i<=n+1;i++){
 			for(int j=0;j<=m+1;j++){
@@ -221,7 +221,7 @@ namespace Maze{
 		if(Settings::MazeType==1) GenerateNatureSingleMaze();
 		else if(Settings::MazeType==2) GeneratePrimNatureMaze();
 	}
-	void PrintMaze(){ //debug, no delay
+	void PrintMaze(){ //no delay
 		for(int i=0;i<=n+1;i++){
 			for(int j=0;j<=m+1;j++){
 				if(isescape(i,j)) continue;
@@ -316,10 +316,10 @@ namespace Maze{
 		setColor(TEXT_COLOR);
 		int row=2,stp=2,r=6;
 		if(n<=13) row=1;
-		MazeCursor(row,m+r); printf("¡ü/W: Up");
-		MazeCursor(row+=stp,m+r); printf("¡ý/S: Down");
-		MazeCursor(row+=stp,m+r); printf("¡û/A: Left");
-		MazeCursor(row+=stp,m+r); printf("¡ú/D: Right");
+		MazeCursor(row,m+r); printf("%s/W: Up",U_A);
+		MazeCursor(row+=stp,m+r); printf("%s/S: Down",D_A);
+		MazeCursor(row+=stp,m+r); printf("%s/A: Left",L_A);
+		MazeCursor(row+=stp,m+r); printf("%s/D: Right",R_A);
 		MazeCursor(row+=stp,m+r); printf("Esc: Exit");
 		if(cost<=0) return;
 		if(row+stp>n-9){

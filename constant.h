@@ -11,6 +11,7 @@ const int COVER_COLOR=8;
 
 
 // Character Map
+//非 GBK 编码下会出现乱码
 const char *L_A="←",*R_A="→",*U_A="↑",*D_A="↓";
 const char *STAR="☆",*CROSS="×";
 const char *BLOCK="█ "; //it's a multi-byte char
