@@ -3,8 +3,10 @@
 #include<algorithm>
 #include<conio.h>
 #include<vector>
+#include<queue>
 #include<ctime>
 #include<cctype>
+#include"constant.h"
 #include"graphic.h"
 #include"config.h"
 using namespace std;
@@ -20,20 +22,17 @@ inline int getOddRand(int l,int r){
 		if(i&1) return i;
 	}
 }
+inline void wait(long long x){
+	long long res=clock();
+	while(clock()-res<x);
+}
 namespace Maze{
 #define MAXSIZ 507
 #define BOUND -1
 #define WALL 1
-#define LAND 2
-	const int PLAYER_COLOR=3;
-	const int TEXT_COLOR=7;
-	const int START_COLOR=7;
-	const int END_COLOR=7;
-	const int MAZE_COLOR=4;
-	const int PATH_COLOR=6;
-	const int COVER_COLOR=7;
-	const int SCOPE=3;
-	int G[MAXSIZ][MAXSIZ],n,m;
+#define ROAD 2
+	const int RANGE=3;
+	int G[MAXSIZ][MAXSIZ],n,m,step;
 	bool vis[MAXSIZ][MAXSIZ],ispath[MAXSIZ][MAXSIZ];
 	bool iscover[MAXSIZ][MAXSIZ];
 	bool covered;
@@ -41,11 +40,12 @@ namespace Maze{
 	pair<int,int> start,end,player;
 	struct CheatCode{
 		char s[13];
-		int match_pos;
-		CheatCode(const char *str){strcpy(s,str);match_pos=0;}
+		int matched;
+		CheatCode(const char *str){strcpy(s,str);matched=0;}
 	};
 	CheatCode ShowPath("PATH");
 	CheatCode RemoveCover("REMOVE");
+	CheatCode Teleport("TELEPORT");
 	inline bool isout(int x,int y){
 		return x<1||x>n||y<1||y>m;
 	}
@@ -58,7 +58,7 @@ namespace Maze{
 	}
 	bool two_step_expand(int x,int y,int i){
 		x+=dx[i]; x+=dx[i]; y+=dy[i]; y+=dy[i];
-		if(isout(x,y)||G[x][y]!=LAND) return 0;
+		if(isout(x,y)||G[x][y]!=ROAD) return 0;
 		return !vis[x][y];
 	}
 	void NatureSingleDFS(int x,int y){
@@ -70,20 +70,27 @@ namespace Maze{
 			if(!two_step_expand(x,y,tp[p])) continue;
 			int tx=x,ty=y;
 			do{
-				G[tx][ty]=LAND;
+				G[tx][ty]=ROAD;
 				tx+=dx[tp[p]]; ty+=dy[tp[p]];
 			}while(G[tx][ty]==WALL);
 			NatureSingleDFS(tx,ty);
 		}
 	}
-	void GenerateNatureSingleMaze(){ //zhu lu niu qu xing
+	void GenerateNatureSingleMaze(){
+		for(int i=0;i<=n+1;i++){ //initial
+			for(int j=0;j<=m+1;j++){
+				if(i==0||j==0||i>n||j>m) G[i][j]=BOUND;
+				else if((i&1)&&(j&1)) G[i][j]=ROAD;
+				else G[i][j]=WALL;
+			}
+		}
 		for(int cnt=1;cnt<=2;++cnt){ //get initial point(2)
 			pair<int,int> tmp=start;
 			if(cnt==2) tmp=end;
 			for(int i=0;i<TWD;i++){
 				int x=tmp.first+dx[i],y=tmp.second+dy[i];
 				if(isout(x,y)) continue;
-				G[x][y]=LAND;
+				G[x][y]=ROAD;
 				if(tmp==start) player=make_pair(x,y); //set player
 				NatureSingleDFS(x,y);
 				break; //only one toward is legal
@@ -91,10 +98,85 @@ namespace Maze{
 		}
 		//embellish
 		if(n%2==0){
-			for(int i=1;i<=m;i++) if(rand()&1) G[n][i]=LAND;
+			for(int i=1;i<=m;i++) if(rand()&1) G[n][i]=ROAD;
 		}
 		if(m%2==0){
-			for(int i=1;i<=n;i++) if(rand()&1) G[i][m]=LAND;
+			for(int i=1;i<=n;i++) if(rand()&1) G[i][m]=ROAD;
+		}
+	}
+	void GeneratePrimNatureMaze(){
+		int prim[MAXSIZ][MAXSIZ]={0};
+		for(int i=0;i<=n+1;i++){
+			for(int j=0;j<=m+1;j++){
+				if(i==0||j==0||i>n||j>m) prim[i][j]=BOUND;
+				else if((i&1)&&(j&1)) prim[i][j]=1; //yellow
+				else prim[i][j]=0; //dark
+			}
+		}
+		for(int cnt=1;cnt<=2;++cnt){
+			priority_queue<pair<int,pair<int,int>>> q;
+			pair<int,int> tmp=start,inp;
+			if(cnt==2) tmp=end;
+			for(int i=0;i<TWD;i++){
+				int x=tmp.first+dx[i],y=tmp.second+dy[i];
+				if(isout(x,y)) continue;
+				if(tmp==start) player=make_pair(x,y); //set player
+				inp=make_pair(x,y);
+				prim[x][y]=11;
+				break; //only one toward is legal
+			}
+			for(int i=0;i<TWD;i++){
+				int x=inp.first+dx[i],y=inp.second+dy[i];
+				if(isout(x,y)) continue;
+				if(prim[x][y]==0){
+					q.push(make_pair(rand(),make_pair(x,y)));
+					prim[x][y]=10; //blue
+				}
+			}
+			while(!q.empty()){
+				pair<int,int> p=q.top().second; q.pop();
+				pair<int,int> p1=make_pair(-1,-1),p2=p1;
+				bool flag=0;
+				for(int i=0;i<TWD;i++){
+					int x=p.first+dx[i],y=p.second+dy[i];
+					if(isout(x,y)) continue;
+					if(prim[x][y]==1) flag^=1;
+					if(prim[x][y]==11) flag^=0; //red
+					if(prim[x][y]==1||prim[x][y]==11){
+						if(p1.first==-1) p1=make_pair(x,y);
+						else p2=make_pair(x,y);
+					}
+				}
+				if(!flag){
+					prim[p.first][p.second]=0;
+					continue;
+				}
+				if(prim[p1.first][p1.second]==1) swap(p1,p2);
+				prim[p2.first][p2.second]=11;
+				prim[p.first][p.second]=11;
+				for(int i=0;i<TWD;i++){
+					int x=p2.first+dx[i],y=p2.second+dy[i];
+					if(isout(x,y)) continue;
+					if(prim[x][y]==0){
+						prim[x][y]=10;
+						q.push(make_pair(rand(),make_pair(x,y)));
+					}
+				}
+			}
+		}
+		for(int i=0;i<=n+1;i++){
+			for(int j=0;j<=m+1;j++){
+				if(prim[i][j]==BOUND) G[i][j]=BOUND;
+				else if(prim[i][j]==0) G[i][j]=WALL;
+				else G[i][j]=ROAD;
+			}
+		}
+		//embellish
+		if(n%2==0){
+			for(int i=1;i<=m;i++) if(rand()&1) G[n][i]=ROAD;
+		}
+		if(m%2==0){
+			for(int i=1;i<=n;i++) if(rand()&1) G[i][m]=ROAD;
 		}
 	}
 	void GeneratePoint(){
@@ -110,7 +192,7 @@ namespace Maze{
 		for(int i=0;i<TWD;i++){
 			int tx=x+dx[i],ty=y+dy[i];
 			if(isout(tx,ty)&&make_pair(tx,ty)!=end) continue;
-			if(G[tx][ty]!=LAND&&make_pair(tx,ty)!=end) continue;
+			if(G[tx][ty]!=ROAD&&make_pair(tx,ty)!=end) continue;
 			SearchNext(tx,ty);
 			if(vis[end.first][end.second]){
 				path.push_back(make_pair(x,y));
@@ -118,31 +200,26 @@ namespace Maze{
 			}
 		}
 	}
-	void CalculatePath(int x,int y){ //get path between player and end
+	void CalculatePath(int x,int y){ //calc path between player and end
 		memset(vis,0,sizeof(vis)); path.clear();
 		memset(ispath,0,sizeof(ispath));
 		SearchNext(x,y);
-		//path.pop_back(); // pop player
+		//path.pop_back(); // pop player, not necessary
 		reverse(path.begin(),path.end());
 	}
 	void GenerateMaze(int height,int weight){
 		system("cls");
-		n=height; m=weight;
+		n=height; m=weight; step=0;
 		covered=Settings::isCover;
 		memset(ispath,0,sizeof(ispath));
 		memset(iscover,covered,sizeof(iscover));
 		memset(vis,0,sizeof(vis));
 		memset(G,0,sizeof(G));
-		for(int i=0;i<=n+1;i++){
-			for(int j=0;j<=m+1;j++){
-				if(i==0||j==0||i>n||j>m) G[i][j]=BOUND;
-				else if((i&1)&&(j&1)) G[i][j]=LAND;
-				else G[i][j]=WALL;
-			}
-		}
-		//initial ended
+		player=start=end=make_pair(0,0);
+		path.clear();
 		GeneratePoint();
 		if(Settings::MazeType==1) GenerateNatureSingleMaze();
+		else if(Settings::MazeType==2) GeneratePrimNatureMaze();
 	}
 	void PrintMaze(){ //debug, no delay
 		for(int i=0;i<=n+1;i++){
@@ -165,17 +242,20 @@ namespace Maze{
 				}
 				else{
 					setColor(MAZE_COLOR);
-					if(G[i][j]==WALL) printf(BLOCK); //it's a multi-byte char
+					if(G[i][j]==WALL) printf(BLOCK);
 					else if(G[i][j]==BOUND) printf(BLOCK);
-					else printf("  "); //land
+					else printf("  "); //ROAD
 				}
 			}
 		}
 	}
 	void ShowMaze(){
 		vector<pair<int,int> > v;
-		for(int i=0;i<=n+1;i++)
-			for(int j=0;j<=m+1;j++) if(!isescape(i,j)) v.push_back(make_pair(i,j));
+		for(int i=0;i<=n+1;i++){
+			for(int j=0;j<=m+1;j++){
+				if(!isescape(i,j)&&G[i][j]!=ROAD) v.push_back(make_pair(i,j));
+			}
+		}
 		random_shuffle(v.begin(),v.end());
 		vector<pair<int,int> >::iterator it;
 		for(it=v.begin();it!=v.end();++it){
@@ -187,9 +267,9 @@ namespace Maze{
 				setColor(MAZE_COLOR);
 				if(G[i][j]==WALL) printf(BLOCK);
 				else if(G[i][j]==BOUND) printf(BLOCK);
-				else printf("  "); //land
+				else printf("  "); //ROAD
 			}
-			for(int tmp_cnt=0;tmp_cnt<=50000;tmp_cnt++); //make program slow down
+			for(int tmp_cnt=0;tmp_cnt<=60000;tmp_cnt++); //make program slow down
 		}
 		MazeCursor(start.first,start.second);
 		setColor(START_COLOR); printf(start.second?D_A:R_A);
@@ -198,11 +278,11 @@ namespace Maze{
 		MazeCursor(player.first,player.second);
 		setColor(PLAYER_COLOR); printf(PLAYER);
 		if(covered){
-			Sleep(400);
+			Sleep(1000);
 			for(int i=0;i<=n+1;i++){
 				for(int j=0;j<=m+1;j++){
 					if(G[i][j]==BOUND) iscover[i][j]=0;
-					if(getdis(player,make_pair(i,j))<=SCOPE) iscover[i][j]=0;
+					if(getdis(player,make_pair(i,j))<=RANGE) iscover[i][j]=0;
 					if(iscover[i][j]){
 						MazeCursor(i,j); setColor(COVER_COLOR);
 						printf(BLOCK);
@@ -229,22 +309,45 @@ namespace Maze{
 				printf(ISPATH);
 			}
 			last=p;
-			Sleep(10);
+			wait(1);
 		}
 	}
-	void PrintHelp(){
+	void PrintInfo(double cost=-1){
 		setColor(TEXT_COLOR);
 		int row=2,stp=2,r=6;
-		if(n<=6) row=1,stp=1;
+		if(n<=13) row=1;
 		MazeCursor(row,m+r); printf("¡ü/W: Up");
 		MazeCursor(row+=stp,m+r); printf("¡ý/S: Down");
 		MazeCursor(row+=stp,m+r); printf("¡û/A: Left");
 		MazeCursor(row+=stp,m+r); printf("¡ú/D: Right");
 		MazeCursor(row+=stp,m+r); printf("Esc: Exit");
+		if(cost<=0) return;
+		if(row+stp>n-9){
+			for(int i=0;i<=n;i++){
+				MazeCursor(i,m+r); printf("            ");
+			}
+			row=2;
+		}
+		else row=n-8;
+		r=4;
+		MazeCursor(row,m+4); printf("G A M E     O V E R");
+		if(player==end){
+			MazeCursor(row+=stp,m+r); setColor(2);
+			printf("You Reached the End");
+		}
+		else{
+			setColor(8); MazeCursor(row+=stp,m+r);
+			printf(" You Quit the Game");
+		}
+		r=6; setColor(TEXT_COLOR);
+		MazeCursor(row+=3,m+r);
+		printf("Time: %.1f s",cost);
+		MazeCursor(row+=stp,m+r);
+		printf("Step:  %d",step);
 	}
 	void ReflushMaze(){
 		PrintMaze();
-		PrintHelp();
+		PrintInfo();
 		PrintPath();
 	}
 	int toToward(char ch){ //get toward in d* array
@@ -265,54 +368,73 @@ namespace Maze{
 		else if(G[x][y]==WALL){
 			setColor(MAZE_COLOR); printf(BLOCK);
 		}
-		else{ //is land
+		else{ //is ROAD
 			printf("  ");
 		}
 	}
 	void MatchCheatCode(char ch){
 		if(!isalpha(ch)) return;
 		ch=toupper(ch);
-		if(ShowPath.s[ShowPath.match_pos]==ch) ++ShowPath.match_pos;
-		else ShowPath.match_pos=0;
-		if(ShowPath.match_pos==(int)strlen(ShowPath.s)){
+		if(ShowPath.s[ShowPath.matched]==ch) ++ShowPath.matched;
+		else ShowPath.matched=0;
+		if(ShowPath.matched==(int)strlen(ShowPath.s)){
 			CalculatePath(player.first,player.second);
 			ReflushMaze(); PrintPath();
-			ShowPath.match_pos=0;
+			ShowPath.matched=0;
 		}
-		if(RemoveCover.s[RemoveCover.match_pos]==ch) ++RemoveCover.match_pos;
-		else RemoveCover.match_pos=0;
-		if(RemoveCover.match_pos==(int)strlen(RemoveCover.s)){
+		if(RemoveCover.s[RemoveCover.matched]==ch) ++RemoveCover.matched;
+		else RemoveCover.matched=0;
+		if(RemoveCover.matched==(int)strlen(RemoveCover.s)){
 			for(int i=0;i<=n+1;i++)
 				for(int j=0;j<=m+1;j++) if(iscover[i][j]) RestoreBlock(i,j);
 			memset(iscover,0,sizeof(iscover)); covered=0;
-			RemoveCover.match_pos=0;
+			RemoveCover.matched=0;
+		}
+		if(Teleport.s[Teleport.matched]==ch) ++Teleport.matched;
+		else Teleport.matched=0;
+		if(Teleport.matched==(int)strlen(Teleport.s)){
+			for(int i=0;i<TWD;++i){
+				int x=end.first+dx[i],y=end.second+dy[i];
+				if(isout(x,y)||G[x][y]!=ROAD) continue;
+				RestoreBlock(player.first,player.second);
+				player=make_pair(x,y); ++step;
+				MazeCursor(x,y); setColor(PLAYER_COLOR);
+				printf(PLAYER);
+				break;
+			}
+			Teleport.matched=0;
 		}
 	}
 	pair<int,int> NextStep(int x,int y,int i){
 		if(isout(x+dx[i],y+dy[i])) return make_pair(x,y);
-		if(G[x+dx[i]][y+dy[i]]!=LAND) return make_pair(x,y);
+		if(G[x+dx[i]][y+dy[i]]!=ROAD) return make_pair(x,y);
 		return make_pair(x+dx[i],y+dy[i]);
 	}
 	void RunGame(){
 		while(1){
 			char ch=getch();
 			if(ch==ESC) break; //exit game
+			if(ch==TAB) ReflushMaze(); //for debug
 			int twd=toToward(ch);
 			if(twd!=-1){ //go to next step
 				if(make_pair(player.first+dx[twd],player.second+dy[twd])==end){
-					break; // arrive end
+					player=end; break; // arrive end
 				}
 				RestoreBlock(player.first,player.second);
-				player=NextStep(player.first,player.second,twd); //go next
+				pair<int,int> nxt_stp=NextStep(player.first,player.second,twd);
+				if(nxt_stp!=player) ++step;
+				player=nxt_stp;
 				MazeCursor(player.first,player.second);
 				setColor(PLAYER_COLOR); printf(PLAYER);
 			}
+			MatchCheatCode(ch);
 			if(covered){
-				for(int di=-SCOPE;di<=SCOPE;++di){
-					for(int dj=-SCOPE;dj<=SCOPE;++dj){
+				for(int di=-RANGE;di<=RANGE;++di){
+					for(int dj=-RANGE;dj<=RANGE;++dj){
 						int i=player.first,j=player.second;
 						if(isescape(i+di,j+dj)) continue;
 						if(!iscover[i+di][j+dj]) continue;
+						if(make_pair(i+di,j+dj)==player) continue;
 						iscover[i+di][j+dj]=0;
 						MazeCursor(i+di,j+dj);
 						if(G[i+di][j+dj]==WALL){
@@ -325,13 +447,17 @@ namespace Maze{
 					}
 				}
 			}
-			MatchCheatCode(ch);
 		}
+	}
+	void ShowEnd(double cost){
+		PrintInfo(cost);
+		gotoxy(Maze::n+DROW+3,0); setColor(7);
+		MediatePrint(">>> Press Enter to Play Again or Press Esc to Exit <<<");
 	}
 #undef MAXSIZ
 #undef BOUND
 #undef WALL
-#undef LAND
+#undef ROAD
 }
 void PrintSettings(){ //debug, can remove
 	Settings::ReadinSettings();
@@ -347,15 +473,11 @@ int main(){
 	setConsoleSize(Settings::MazeHeight+8,Settings::MazeWeight*2+35);
 	while(1){
 		Maze::GenerateMaze(Settings::MazeHeight,Settings::MazeWeight);
+		Maze::PrintInfo();
 		Maze::ShowMaze();
-		//Maze::PrintPath();
-		Maze::PrintHelp();
 		double start_time=RUNTIME;
 		Maze::RunGame();
-		gotoxy(Maze::n+DROW+3,0);
-		setColor(7); printf("> Game Over! ");
-		printf("You Spend %.1f Seconds.\n",RUNTIME-start_time);
-		puts("> Press Enter to Play Again or Press Esc to Exit Game.");
+		Maze::ShowEnd(RUNTIME-start_time);
 		int press=getch();
 		while(press!=ESC&&press!=ENTER) press=getch();
 		if(press==ESC) break;
