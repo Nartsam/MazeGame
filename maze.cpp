@@ -316,10 +316,10 @@ namespace Maze{
 		setColor(TEXT_COLOR);
 		int row=2,stp=2,r=6;
 		if(n<=13) row=1;
-		MazeCursor(row,m+r); printf("¡ü/W: Up");
-		MazeCursor(row+=stp,m+r); printf("¡ý/S: Down");
-		MazeCursor(row+=stp,m+r); printf("¡û/A: Left");
-		MazeCursor(row+=stp,m+r); printf("¡ú/D: Right");
+		MazeCursor(row,m+r); printf("%s/W: Up",U_A);
+		MazeCursor(row+=stp,m+r); printf("%s/S: Down",D_A);
+		MazeCursor(row+=stp,m+r); printf("%s/A: Left",L_A);
+		MazeCursor(row+=stp,m+r); printf("%s/D: Right",R_A);
 		MazeCursor(row+=stp,m+r); printf("Esc: Exit");
 		if(cost<=0) return;
 		if(row+stp>n-9){
@@ -374,14 +374,14 @@ namespace Maze{
 	}
 	void MatchCheatCode(char ch){
 		if(!isalpha(ch)) return;
-		ch=toupper(ch);
+		ch=toupper(ch); //全部换成大写
 		if(ShowPath.s[ShowPath.matched]==ch) ++ShowPath.matched;
-		else ShowPath.matched=0;
+		else ShowPath.matched=0; //失配要从头开始
 		if(ShowPath.matched==(int)strlen(ShowPath.s)){
 			CalculatePath(player.first,player.second);
 			ReflushMaze(); PrintPath();
 			ShowPath.matched=0;
-		}
+		} //其余两个同理
 		if(RemoveCover.s[RemoveCover.matched]==ch) ++RemoveCover.matched;
 		else RemoveCover.matched=0;
 		if(RemoveCover.matched==(int)strlen(RemoveCover.s)){
@@ -414,11 +414,11 @@ namespace Maze{
 		while(1){
 			char ch=getch();
 			if(ch==ESC) break; //exit game
-			if(ch==TAB) ReflushMaze(); //for debug
+			if(ch==TAB) ReflushMaze(); //强制刷新，调试用
 			int twd=toToward(ch);
 			if(twd!=-1){ //go to next step
 				if(make_pair(player.first+dx[twd],player.second+dy[twd])==end){
-					player=end; break; // arrive end
+					player=end; break; //到达终点直接返回，不能进行额外动作
 				}
 				RestoreBlock(player.first,player.second);
 				pair<int,int> nxt_stp=NextStep(player.first,player.second,twd);
@@ -434,7 +434,7 @@ namespace Maze{
 						int i=player.first,j=player.second;
 						if(isescape(i+di,j+dj)) continue;
 						if(!iscover[i+di][j+dj]) continue;
-						if(make_pair(i+di,j+dj)==player) continue;
+						if(make_pair(i+di,j+dj)==player) continue; //一定要跳过玩家自己
 						iscover[i+di][j+dj]=0;
 						MazeCursor(i+di,j+dj);
 						if(G[i+di][j+dj]==WALL){
