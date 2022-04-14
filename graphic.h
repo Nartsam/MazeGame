@@ -4,7 +4,7 @@
 #include<cstdio>
 const int DROW=2;
 const int DCOL=4;
-void gotoxy(int x,int y){ //(0,0) is left & up
+void gotoxy(int x,int y){ //(0,0)是左上角
 	COORD coord={(short)y,(short)x}; //swap row and col
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
 }
@@ -34,7 +34,7 @@ void setConsoleSize(int height,int weight){ //don't change it
 	command[25]='0'+x/100;command[26]='0'+(x/10)%10;command[27]='0'+x%10;
 	system(command);
 }
-void MediatePrint(const char *s){
+void MediatePrint(const char *s){ //居中打印
 	int len=strlen(s);
 	if(len<ConWeight){
 		int spc=ConWeight/2-len/2-2;
