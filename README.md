@@ -1,5 +1,9 @@
+### Maze Game
+
+此程序使用的是 `GBK` 文字编码格式，如果出现乱码等显示问题，请检查你所用编辑器的文字编码格式
+
+`config.ini` 是游戏的配置文件，如果缺少，程序将会使用默认配置
 
 **参考资料**
 
 随机生成迷宫（1）：https://www.likecs.com/show-204754110.html
-迷宫生成算法：https://blog.csdn.net/twopointfive/article/details/123678705
