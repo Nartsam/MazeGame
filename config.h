@@ -43,15 +43,15 @@ namespace Settings{
 	}
 	void WriteoutSettings(){
 		std::ofstream file(CONFIG_FILE);
-		file<<"// MazeType ¿ØÖÆÃÔ¹¬µÄÉú³ÉËã·¨: {1: Ö÷Â·Å¤ÇúÐÍ, 2: ×ÔÈ»·Ö²íÐÍ}"<<std::endl;
+		file<<"// MazeType æŽ§åˆ¶è¿·å®«çš„ç”Ÿæˆç®—æ³•: {1: ä¸»è·¯æ‰­æ›²åž‹, 2: è‡ªç„¶åˆ†å²”åž‹}"<<std::endl;
 		file<<">MazeType:   "<<MazeType<<std::endl;
-//		file<<"// MazeShape ¿ØÖÆÃÔ¹¬µÄÐÎ×´: {1: ¾ØÐÎ, 2: ÐÄÐÎ}"<<std::endl;
+//		file<<"// MazeShape æŽ§åˆ¶è¿·å®«çš„å½¢çŠ¶: {1: çŸ©å½¢, 2: å¿ƒå½¢}"<<std::endl;
 //		file<<">MazeShape:   "<<MazeShape<<std::endl;
-		file<<"// MazeHeight & Weight ¿ØÖÆÃÔ¹¬µÄ¸ß¶ÈºÍ¿í¶È, ·¶Î§: 11~31/11~51"<<std::endl;
-		file<<"// Îª±£Ö¤ÏÔÊ¾Ð§¹û, Èç¹ûÒªÉú³É·Ç¾ØÐÎµÄÃÔ¹¬, ¸ÃÏîÉèÖÃ¿ÉÄÜ²»Æð×÷ÓÃ"<<std::endl;
+		file<<"// MazeHeight & Weight æŽ§åˆ¶è¿·å®«çš„é«˜åº¦å’Œå®½åº¦, èŒƒå›´: 11~31/11~51"<<std::endl;
+		file<<"// ä¸ºä¿è¯æ˜¾ç¤ºæ•ˆæžœ, å¦‚æžœè¦ç”ŸæˆéžçŸ©å½¢çš„è¿·å®«, è¯¥é¡¹è®¾ç½®å¯èƒ½ä¸èµ·ä½œç”¨"<<std::endl;
 		file<<">MazeHeight:   "<<MazeHeight<<std::endl;
 		file<<">MazeWeight:   "<<MazeWeight<<std::endl;
-		file<<"// Covered ¾ö¶¨ÊÇ·ñÒªÔÚÃÔ¹¬ÉÏ¸²¸ÇÕÚÕÖ"<<std::endl;
+		file<<"// Covered å†³å®šæ˜¯å¦è¦åœ¨è¿·å®«ä¸Šè¦†ç›–é®ç½©"<<std::endl;
 		file<<">Covered:   "<<(isCover?"true":"false")<<std::endl;
 		file.close();
 	}

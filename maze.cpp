@@ -269,7 +269,8 @@ namespace Maze{
 				else if(G[i][j]==BOUND) printf(BLOCK);
 				else printf("  "); //ROAD
 			}
-			for(int tmp_cnt=0;tmp_cnt<=60000;tmp_cnt++); //make program slow down
+			//wait(1);
+			for(int tmp_cnt=0;tmp_cnt<=400000;tmp_cnt++); //make program slow down
 		}
 		MazeCursor(start.first,start.second);
 		setColor(START_COLOR); printf(start.second?D_A:R_A);
@@ -460,6 +461,7 @@ namespace Maze{
 #undef ROAD
 }
 int main(){
+	system("chcp 65001"); //use utf-8
 	srand(time(0));
 	hideCursor();
 	Settings::ReadinSettings();
