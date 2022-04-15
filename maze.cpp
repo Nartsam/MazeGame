@@ -114,7 +114,7 @@ namespace Maze{
 			}
 		}
 		for(int cnt=1;cnt<=2;++cnt){
-			priority_queue<pair<int,pair<int,int>>> q;
+			priority_queue<pair<int,pair<int,int> > > q;
 			pair<int,int> tmp=start,inp;
 			if(cnt==2) tmp=end;
 			for(int i=0;i<TWD;i++){
