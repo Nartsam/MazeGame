@@ -31,7 +31,7 @@ namespace Maze{
 #define BOUND -1
 #define WALL 1
 #define ROAD 2
-	const int RANGE=3;
+	const int RANGE=2;
 	int G[MAXSIZ][MAXSIZ],n,m,step;
 	bool vis[MAXSIZ][MAXSIZ],ispath[MAXSIZ][MAXSIZ];
 	bool iscover[MAXSIZ][MAXSIZ];
@@ -257,6 +257,7 @@ namespace Maze{
 			}
 		}
 		random_shuffle(v.begin(),v.end());
+		int cnt=0;
 		vector<pair<int,int> >::iterator it;
 		for(it=v.begin();it!=v.end();++it){
 			int i=(*it).first,j=(*it).second;
@@ -269,8 +270,7 @@ namespace Maze{
 				else if(G[i][j]==BOUND) printf(BLOCK);
 				else printf("  "); //ROAD
 			}
-			//wait(1);
-			for(int tmp_cnt=0;tmp_cnt<=400000;tmp_cnt++); //make program slow down
+			if(++cnt%12==0) wait(1);
 		}
 		MazeCursor(start.first,start.second);
 		setColor(START_COLOR); printf(start.second?D_A:R_A);
@@ -386,8 +386,11 @@ namespace Maze{
 		if(RemoveCover.s[RemoveCover.matched]==ch) ++RemoveCover.matched;
 		else RemoveCover.matched=0;
 		if(RemoveCover.matched==(int)strlen(RemoveCover.s)){
-			for(int i=0;i<=n+1;i++)
-				for(int j=0;j<=m+1;j++) if(iscover[i][j]) RestoreBlock(i,j);
+			for(int i=0;i<=n+1;i++){
+				for(int j=0;j<=m+1;j++){
+					if(iscover[i][j]&&make_pair(i,j)!=player) RestoreBlock(i,j);
+				}
+			}
 			memset(iscover,0,sizeof(iscover)); covered=0;
 			RemoveCover.matched=0;
 		}

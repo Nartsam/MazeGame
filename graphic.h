@@ -37,7 +37,7 @@ void setConsoleSize(int height,int weight){ //don't change it
 void MediatePrint(const char *s){
 	int len=strlen(s);
 	if(len<ConWeight){
-		int spc=ConWeight/2-len/2-2;
+		int spc=ConWeight/2-len/2;
 		while(spc-->0) putchar(' ');
 	}
 	puts(s);
