@@ -11,14 +11,13 @@ const int COVER_COLOR=8;
 
 
 // Character Map
-//·Ç GBK ±àÂëÏÂ»á³öÏÖÂÒÂë
-const char *L_A="¡û",*R_A="¡ú",*U_A="¡ü",*D_A="¡ı";
-const char *STAR="¡î",*CROSS="¡Á";
-const char *BLOCK="¨€ "; //it's a multi-byte char
-const char *U_T="¡ø",*D_T="¨‹",*L_T="?",*R_T="?";
-const char *MAN="¡á",*WOMAN="¡â";
-const char *PLAYER="¡ô";
-const char *ISPATH="¡¤";
+const char *L_A="â†",*R_A="â†’",*U_A="â†‘",*D_A="â†“";
+const char *STAR="â˜†",*CROSS="Ã—";
+const char *BLOCK="â–ˆ"; //it's a multi-byte char
+const char *U_T="â–²",*D_T="â–¼",*L_T="?",*R_T="?";
+const char *MAN="â™‚",*WOMAN="â™€";
+const char *PLAYER="â—†";
+const char *ISPATH="Â·";
 
 
 //Keyboard Map
