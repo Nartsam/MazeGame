@@ -22,7 +22,7 @@ inline int getOddRand(int l,int r){
 		if(i&1) return i;
 	}
 }
-inline void wait(long long x){ //等待某个时钟周期
+inline void wait(long long x){
 	long long res=clock();
 	while(clock()-res<x);
 }
@@ -31,25 +31,25 @@ namespace Maze{
 #define BOUND -1
 #define WALL 1
 #define ROAD 2
-	const int RANGE=2; //玩家 2*2 的范围内可视
-	int G[MAXSIZ][MAXSIZ],n,m,step; //G 数组存地图
+	const int RANGE=2;
+	int G[MAXSIZ][MAXSIZ],n,m,step;
 	bool vis[MAXSIZ][MAXSIZ],ispath[MAXSIZ][MAXSIZ];
 	bool iscover[MAXSIZ][MAXSIZ];
 	bool covered;
 	vector<pair<int,int> > path;
 	pair<int,int> start,end,player;
-	struct CheatCode{  //作弊码
+	struct CheatCode{
 		char s[17];
 		int matched;
 		CheatCode(const char *str){strcpy(s,str);matched=0;}
 	};
-	CheatCode ShowPath("PATH"); //显示路径
-	CheatCode RemoveCover("REMOVE"); //移除遮罩
-	CheatCode Teleport("TELEPORT"); //传送
-	inline bool isout(int x,int y){ //不包括边界
+	CheatCode ShowPath("PATH");
+	CheatCode RemoveCover("REMOVE");
+	CheatCode Teleport("TELEPORT");
+	inline bool isout(int x,int y){
 		return x<1||x>n||y<1||y>m;
 	}
-	inline bool isescape(int x,int y){ //包括边界
+	inline bool isescape(int x,int y){
 		if(x<0||x>n+1||y<0||y>m+1) return 1;
 		return 0;
 	}
@@ -185,7 +185,7 @@ namespace Maze{
 		if(getRand(0,3)) end=make_pair(getOddRand(n/2+1,n),m+1);
 		else end=make_pair(n+1,getOddRand(m/2+1,m));
 	}
-	void SearchNext(int x,int y){ //dfs寻路
+	void SearchNext(int x,int y){ //dfs way-finding
 		if(vis[x][y]) return;
 		vis[x][y]=1;
 		if(x==end.first&&y==end.second) return;
@@ -208,14 +208,14 @@ namespace Maze{
 		reverse(path.begin(),path.end());
 	}
 	void GenerateMaze(int height,int weight){
-		system("cls"); //清掉上一个迷宫
-		n=height; m=weight; step=0; //非法数据在Settings中已经被过滤
+		system("cls");
+		n=height; m=weight; step=0;
 		covered=Settings::isCover;
 		memset(ispath,0,sizeof(ispath));
 		memset(iscover,covered,sizeof(iscover));
 		memset(vis,0,sizeof(vis));
 		memset(G,0,sizeof(G));
-		player=start=end=make_pair(0,0); //not necessary
+		player=start=end=make_pair(0,0);
 		path.clear();
 		GeneratePoint();
 		if(Settings::MazeType==1) GenerateNatureSingleMaze();
@@ -270,7 +270,7 @@ namespace Maze{
 				else if(G[i][j]==BOUND) printf(BLOCK);
 				else printf("  "); //ROAD
 			}
-			if(++cnt%12==0) wait(1); //减慢程序速度
+			if(++cnt%12==0) wait(1);
 		}
 		MazeCursor(start.first,start.second);
 		setColor(START_COLOR); printf(start.second?D_A:R_A);
@@ -311,8 +311,6 @@ namespace Maze{
 			}
 			last=p;
 			wait(1);
-			//若路径很长，打印完后可能会有一段时间的输入延迟，原因未知
-			//若打印路径后不等待，则没有这种情况
 		}
 	}
 	void PrintInfo(double cost=-1){
@@ -324,7 +322,7 @@ namespace Maze{
 		MazeCursor(row+=stp,m+r); printf("%s/A: Left",L_A);
 		MazeCursor(row+=stp,m+r); printf("%s/D: Right",R_A);
 		MazeCursor(row+=stp,m+r); printf("Esc: Exit");
-		if(cost<=0) return; //若游戏还没结束，直接返回
+		if(cost<=0) return;
 		if(row+stp>n-9){
 			for(int i=0;i<=n;i++){
 				MazeCursor(i,m+r); printf("            ");
@@ -420,11 +418,11 @@ namespace Maze{
 		while(1){
 			char ch=getch();
 			if(ch==ESC) break; //exit game
-			if(ch==TAB) ReflushMaze(); //强制刷新，调试用
+			if(ch==TAB) ReflushMaze(); //for debug
 			int twd=toToward(ch);
 			if(twd!=-1){ //go to next step
 				if(make_pair(player.first+dx[twd],player.second+dy[twd])==end){
-					player=end; break; // 到达终点直接返回，不能进行额外动作
+					player=end; break; // arrive end
 				}
 				RestoreBlock(player.first,player.second);
 				pair<int,int> nxt_stp=NextStep(player.first,player.second,twd);
@@ -440,8 +438,8 @@ namespace Maze{
 						int i=player.first,j=player.second;
 						if(isescape(i+di,j+dj)) continue;
 						if(!iscover[i+di][j+dj]) continue;
-						if(make_pair(i+di,j+dj)==player) continue;
 						iscover[i+di][j+dj]=0;
+						if(make_pair(i+di,j+dj)==player) continue;
 						MazeCursor(i+di,j+dj);
 						if(G[i+di][j+dj]==WALL){
 							setColor(MAZE_COLOR); printf(BLOCK);

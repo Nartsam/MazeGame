@@ -2,7 +2,7 @@
 #include<cstring>
 namespace Settings{
 #define CONFIG_FILE "config.ini"
-	int MazeType=1; //主路扭曲型
+	int MazeType=1; //nature-single
 	int MazeShape=1; //rectangle
 	int MazeHeight=21,MazeWeight=31;
 	bool isCover=1;
@@ -11,7 +11,7 @@ namespace Settings{
 		if(file.eof()){file.close(); return;}
 		std::string str;
 		while(file>>str){
-			if(str.size()>=2&&str[0]=='/'&&str[1]=='/') getline(file,str); //注释
+			if(str.size()>=2&&str[0]=='/'&&str[1]=='/') getline(file,str);
 			else{
 				if(str==">MazeType:"){
 					int x; file>>x;
@@ -36,7 +36,7 @@ namespace Settings{
 				}
 			}
 		}
-		if(MazeShape==2){ //心形
+		if(MazeShape==2){ //is heart
 			MazeHeight=27; MazeWeight=47;
 		}
 		file.close();

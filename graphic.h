@@ -5,7 +5,7 @@
 const int DROW=2;
 const int DCOL=4;
 void gotoxy(int x,int y){ //(0,0) is top-left
-	COORD coord={(short)y,(short)x}; //交换行列，使符合使用习惯
+	COORD coord={(short)y,(short)x}; //swap row and col
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
 }
 void MazeCursor(int x,int y){ //cursor in maze
@@ -24,7 +24,7 @@ void setColor(int x){
 	SetConsoleTextAttribute(handle,x);
 }
 int ConHeight,ConWeight;
-void setConsoleSize(int height,int weight){ //写的很丑，但能跑，不要改动
+void setConsoleSize(int height,int weight){ //don't change it
 	ConHeight=height>43?43:height;
 	ConWeight=weight>180?180:weight;
 	char command[100]="Mode Con Cols=     Lines=     ";
@@ -34,7 +34,7 @@ void setConsoleSize(int height,int weight){ //写的很丑，但能跑，不要�
 	command[25]='0'+x/100;command[26]='0'+(x/10)%10;command[27]='0'+x%10;
 	system(command);
 }
-void MediatePrint(const char *s){ //居中打印
+void MediatePrint(const char *s){
 	int len=strlen(s);
 	if(len<ConWeight){
 		int spc=ConWeight/2-len/2;
