@@ -20,6 +20,8 @@
 
 - 如果 Windows 控制台出现个别字符只打印一半的情况（出现概率较低），可以尝试使用 `Tab` 键强制刷新
 
+- `maze-gbk.zip` 是使用 `GBK` 编码的项目备份
+
 ### 参考资料
 
 随机生成迷宫（1）：https://www.likecs.com/show-204754110.html
