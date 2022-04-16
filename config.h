@@ -11,7 +11,7 @@ namespace Settings{
 		if(file.eof()){file.close(); return;}
 		std::string str;
 		while(file>>str){
-			if(str.size()>=2&&str[0]=='/'&&str[1]=='/') getline(file,str);
+			if(str.size()>=2&&str[0]=='/'&&str[1]=='/') getline(file,str); //注释
 			else{
 				if(str==">MazeType:"){
 					int x; file>>x;
