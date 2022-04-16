@@ -16,13 +16,13 @@ inline int getRand(int l,int r){
 	if(l>r) swap(l,r);
 	return rand()%(r-l+1)+l;
 }
-inline int getOddRand(int l,int r){
+inline int getOddRand(int l,int r){ //生成随机奇数
 	if(l==r&&l%2==0&&r%2==0) return 1;
 	for(int i=getRand(l,r);1;i=getRand(l,r)){
 		if(i&1) return i;
 	}
 }
-inline void wait(long long x){
+inline void wait(long long x){ //等待某个时钟周期
 	long long res=clock();
 	while(clock()-res<x);
 }
@@ -31,8 +31,8 @@ namespace Maze{
 #define BOUND -1
 #define WALL 1
 #define ROAD 2
-	const int RANGE=2;
-	int G[MAXSIZ][MAXSIZ],n,m,step;
+	const int RANGE=2; //玩家2*2的范围内可视
+	int G[MAXSIZ][MAXSIZ],n,m,step; //G 数组存地图
 	bool vis[MAXSIZ][MAXSIZ],ispath[MAXSIZ][MAXSIZ];
 	bool iscover[MAXSIZ][MAXSIZ];
 	bool covered;
@@ -46,10 +46,10 @@ namespace Maze{
 	CheatCode ShowPath("PATH");
 	CheatCode RemoveCover("REMOVE");
 	CheatCode Teleport("TELEPORT");
-	inline bool isout(int x,int y){
+	inline bool isout(int x,int y){ //不包括边界
 		return x<1||x>n||y<1||y>m;
 	}
-	inline bool isescape(int x,int y){
+	inline bool isescape(int x,int y){ //包括边界
 		if(x<0||x>n+1||y<0||y>m+1) return 1;
 		return 0;
 	}
@@ -322,8 +322,8 @@ namespace Maze{
 		MazeCursor(row+=stp,m+r); printf("%s/A: Left",L_A);
 		MazeCursor(row+=stp,m+r); printf("%s/D: Right",R_A);
 		MazeCursor(row+=stp,m+r); printf("Esc: Exit");
-		if(cost<=0) return;
-		if(row+stp>n-9){
+		if(cost<=0) return; //游戏没结束就直接返回
+		if(row+stp>n-9){ //行数不够，就清除 Help
 			for(int i=0;i<=n;i++){
 				MazeCursor(i,m+r); printf("            ");
 			}
@@ -418,7 +418,7 @@ namespace Maze{
 		while(1){
 			char ch=getch();
 			if(ch==ESC) break; //exit game
-			if(ch==TAB) ReflushMaze(); //for debug
+			if(ch==TAB) ReflushMaze(); //强制刷新，调试用
 			int twd=toToward(ch);
 			if(twd!=-1){ //go to next step
 				if(make_pair(player.first+dx[twd],player.second+dy[twd])==end){
